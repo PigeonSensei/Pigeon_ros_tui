@@ -493,6 +493,12 @@ void pigeon_robot_steering::spin() // 전체 흐름 제어 함수
   return;
 }
 
+void pigeon_robot_steering::exit() // 종료시 값 초기화 함수
+{
+  all_reset_cmd_vel();
+  update_topic();
+}
+
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "pigeon_robot_steering");
@@ -505,7 +511,11 @@ int main(int argc, char **argv)
   {
 
     robot_steering.spin();
-    if(robot_steering.key_input == 27) return 0;
+    if(robot_steering.key_input == 27)
+    {
+      robot_steering.exit();
+      return 0;
+    }
     ros::spinOnce();
     loop_rate.sleep();
 

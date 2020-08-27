@@ -72,6 +72,8 @@ public:
 
     void spin();
 
+    void exit();
+
 
     int key_input;
 
