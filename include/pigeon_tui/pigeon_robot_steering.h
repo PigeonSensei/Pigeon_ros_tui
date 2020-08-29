@@ -5,13 +5,10 @@
 
 #include <termios.h>
 
-//#include <ros/assert.h>
-
-//#include <curses.h>
-
 #include "ftxui/component/container.hpp"
 #include "ftxui/screen/string.hpp"
 #include "ftxui/screen/color.hpp"
+#include <pigeon_terminal/pigeon_terminal.h>
 
 struct CMD_VELS
 {
@@ -51,8 +48,6 @@ public:
           ROS_INFO("PIGEON_TUI_ROBOT_STEERING_NODE CLOSE");
        }
 
-    int keybord_input(void);
-
     void tui();
 
     int set_key();
@@ -71,9 +66,6 @@ public:
 
     void exit();
 
-    void reset();
-
-
     int key_input;
 
 private:
@@ -81,7 +73,7 @@ private:
     geometry_msgs::Twist cmd_vel_pub;
     CMD_VELS cmd_vels;
     int cmd_vel_menu_number = 0;
-//    screen Screen;
+    pigeon_terminal Pigeon_terminal;
 
 };
 #endif // PIGEON_ROBOT_STEERING_H

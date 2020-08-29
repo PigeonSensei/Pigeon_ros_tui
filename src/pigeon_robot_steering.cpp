@@ -5,50 +5,12 @@
 */
 
 #include <pigeon_tui/pigeon_robot_steering.h>
-//#include <curses.h>
-int pigeon_robot_steering::keybord_input(void) // 키보드 입력 함수
-{
-   struct termios org_term;
-
-   char input_key = 0;
-
-   tcgetattr(STDIN_FILENO, &org_term);
-
-   struct termios new_term = org_term;
-
-   new_term.c_lflag &= ~(ECHO | ICANON);
-
-   new_term.c_cc[VMIN] = 0;
-   new_term.c_cc[VTIME] = 0;
-
-   tcsetattr(STDIN_FILENO, TCSANOW, &new_term);
-
-   read(STDIN_FILENO, &input_key, 1);
-
-   tcsetattr(STDIN_FILENO, TCSANOW, &org_term);
-
-   return input_key;
-}
-//{
-//  int ch;
-//  struct termios buf;
-//  struct termios save;
-
-//  tcgetattr(0, &save);
-//  buf = save;
-//  buf.c_lflag &= ~(ICANON|ECHO);
-//  buf.c_cc[VMIN] = 1;
-//  buf.c_cc[VTIME] = 0;
-//  tcsetattr(0, TCSAFLUSH, &buf);
-//  ch = getchar();
-//  tcsetattr(0, TCSAFLUSH, &save);
-//  return ch;
-//}
 
 void pigeon_robot_steering::tui() // TUI 함수
 {
   std::string reset_position;
 
+  // -------- style 조건문 --------------
   auto style_0 = (cmd_vel_menu_number == 0) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
   auto style_1 = (cmd_vel_menu_number == 1) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
   auto style_2 = (cmd_vel_menu_number == 2) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
@@ -81,13 +43,12 @@ void pigeon_robot_steering::tui() // TUI 함수
   ftxui::vbox({
        // -------- Top panel --------------
        ftxui::hbox({
-           // -------- Left Menu --------------
            ftxui::hbox({
               ftxui::text(L"Pigeon_robot_steering") | ftxui::bold | ftxui::center, ftxui::separator(),
            }),
            ftxui::text(L"cmd_vel")| color(ftxui::Color::Red) | ftxui::center, ftxui::separator(),
            ftxui::text(L"ver 0.2")| ftxui::bold,
-           // -------- Right Menu --------------
+           // -------- cmd_vel Menu --------------
        }),
       ftxui::separator(),
       ftxui::hbox({
@@ -132,7 +93,7 @@ void pigeon_robot_steering::tui() // TUI 함수
               ftxui::text(L"+"),
               }),
           }) | ftxui::flex, ftxui::separator(),
-      // -------- Bottom panel --------------
+      // -------- cmd_vel_info panel --------------
       ftxui::vbox({
           ftxui::hbox({
               ftxui::text(L"liner.x   : "),
@@ -168,26 +129,16 @@ void pigeon_robot_steering::tui() // TUI 함수
 
   Render(screen, Document);
 
-//  screen.Clear();
-//  std::cout << std::endl << std::endl;
-//  system("clear");
-
-
-  reset();
+  Pigeon_terminal.terminal_clear();
   std::cout << reset_position << screen.ToString() << std::flush;
   reset_position = screen.ResetPosition();
-//  reset();
-//  ros::Duration(0.08).sleep();
 
-
-
-//  std::this_thread::sleep_for(0.01s);
   return;
 }
 
 int pigeon_robot_steering::set_key() // 키 입력 함수
 {
-  key_input =  keybord_input();
+  key_input =  Pigeon_terminal.keybord_input();
   if(key_input == 119 | key_input == 87){ // INPUT W
     cmd_vel_menu_number = cmd_vel_menu_number - 1;
     if(cmd_vel_menu_number < 0 ) cmd_vel_menu_number = 0;
@@ -532,13 +483,10 @@ void pigeon_robot_steering::exit() // 종료시 값 초기화 함수
   all_reset_cmd_vel();
   tui();
   update_topic();
-  reset();
+  Pigeon_terminal.terminal_clear();
 }
 
-void pigeon_robot_steering::reset() // 터미널 리셋
-{
-  printf("\033[2J\033[1;1H");
-}
+
 
 int main(int argc, char **argv)
 {
@@ -559,8 +507,6 @@ int main(int argc, char **argv)
 
     loop_rate.sleep();
     ros::spinOnce();
-
-
 
   }
   return 0;

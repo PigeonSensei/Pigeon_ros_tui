@@ -84,6 +84,13 @@ add_library(pigeon_robot_steering
     include/pigeon_tui/pigeon_robot_steering.h
     )
 
+add_library(pigeon_terminal
+    include/pigeon_terminal/pigeon_terminal.h
+    src/pigeon_terminal/pigeon_terminal.cpp
+    )
+
+#add_library(pigeon::pigeon_terminal ALIAS pigeon_terminal)
+
 add_library(ftxui::screen ALIAS screen)
 add_library(ftxui::dom ALIAS dom)
 add_library(ftxui::component ALIAS component)
@@ -237,8 +244,7 @@ include_directories(
 )
 
 add_executable(pigeon_robot_steering_node src/pigeon_robot_steering.cpp)
-target_link_libraries(pigeon_robot_steering_node PRIVATE screen PRIVATE component PRIVATE gtest PRIVATE gmock PRIVATE gtest_main ${catkin_LIBRARIES})
-
+target_link_libraries(pigeon_robot_steering_node PRIVATE pigeon_terminal PRIVATE screen PRIVATE component PRIVATE gtest PRIVATE gmock PRIVATE gtest_main ${catkin_LIBRARIES})
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
