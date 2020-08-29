@@ -155,7 +155,7 @@ int pigeon_robot_steering::set_key() // 키 입력 함수
   return 0;
 }
 
-void pigeon_robot_steering::intput_cmd_vel_data(int cmd_vel_menu_number, int key_input) // 키 입력에 따른 오돔 대입 함수
+void pigeon_robot_steering::intput_cmd_vel_data(int cmd_vel_menu_number, int key_input) // 키 입력에 따른 cmd_vel 대입 함수
 {
 //----------------- linear_x -----------------//
   if(cmd_vel_menu_number == 0)
@@ -485,8 +485,6 @@ void pigeon_robot_steering::exit() // 종료시 값 초기화 함수
   update_topic();
   Pigeon_terminal.terminal_clear();
 }
-
-
 
 int main(int argc, char **argv)
 {
