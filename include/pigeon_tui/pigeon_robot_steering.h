@@ -4,15 +4,12 @@
 #include <geometry_msgs/Twist.h>
 
 #include <termios.h>
-//#include <unistd.h>
 
+//#include <ros/assert.h>
 
-//#include <chrono>
-//#include <iostream>
-//#include <thread>
+//#include <curses.h>
 
 #include "ftxui/component/container.hpp"
-//#include "ftxui/component/screen_interactive.hpp"
 #include "ftxui/screen/string.hpp"
 #include "ftxui/screen/color.hpp"
 
@@ -43,7 +40,7 @@ class pigeon_robot_steering
 {
 public:
     pigeon_robot_steering(ros::NodeHandle &n)
-           : pub(n.advertise<geometry_msgs::Twist>("cmd_vel",1000))
+           : pub(n.advertise<geometry_msgs::Twist>("cmd_vel",10))
        {
           // open run
           ROS_INFO("PIGEON_TUI_ROBOT_STEERING_NODE OPNE");
@@ -74,6 +71,8 @@ public:
 
     void exit();
 
+    void reset();
+
 
     int key_input;
 
@@ -82,6 +81,7 @@ private:
     geometry_msgs::Twist cmd_vel_pub;
     CMD_VELS cmd_vels;
     int cmd_vel_menu_number = 0;
+//    screen Screen;
 
 };
 #endif // PIGEON_ROBOT_STEERING_H

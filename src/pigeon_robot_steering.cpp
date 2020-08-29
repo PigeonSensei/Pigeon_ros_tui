@@ -1,28 +1,49 @@
 /*
-  pigeon robot steering.Ver 0.1
+  pigeon robot steering.Ver 0.2
   maker PigeonSensei
-  Date 2020.08.28
+  Date 2020.08.30
 */
 
-
 #include <pigeon_tui/pigeon_robot_steering.h>
-
+//#include <curses.h>
 int pigeon_robot_steering::keybord_input(void) // 키보드 입력 함수
 {
-  int ch;
-  struct termios buf;
-  struct termios save;
+   struct termios org_term;
 
-  tcgetattr(0, &save);
-  buf = save;
-  buf.c_lflag &= ~(ICANON|ECHO);
-  buf.c_cc[VMIN] = 1;
-  buf.c_cc[VTIME] = 0;
-  tcsetattr(0, TCSAFLUSH, &buf);
-  ch = getchar();
-  tcsetattr(0, TCSAFLUSH, &save);
-  return ch;
+   char input_key = 0;
+
+   tcgetattr(STDIN_FILENO, &org_term);
+
+   struct termios new_term = org_term;
+
+   new_term.c_lflag &= ~(ECHO | ICANON);
+
+   new_term.c_cc[VMIN] = 0;
+   new_term.c_cc[VTIME] = 0;
+
+   tcsetattr(STDIN_FILENO, TCSANOW, &new_term);
+
+   read(STDIN_FILENO, &input_key, 1);
+
+   tcsetattr(STDIN_FILENO, TCSANOW, &org_term);
+
+   return input_key;
 }
+//{
+//  int ch;
+//  struct termios buf;
+//  struct termios save;
+
+//  tcgetattr(0, &save);
+//  buf = save;
+//  buf.c_lflag &= ~(ICANON|ECHO);
+//  buf.c_cc[VMIN] = 1;
+//  buf.c_cc[VTIME] = 0;
+//  tcsetattr(0, TCSAFLUSH, &buf);
+//  ch = getchar();
+//  tcsetattr(0, TCSAFLUSH, &save);
+//  return ch;
+//}
 
 void pigeon_robot_steering::tui() // TUI 함수
 {
@@ -65,7 +86,7 @@ void pigeon_robot_steering::tui() // TUI 함수
               ftxui::text(L"Pigeon_robot_steering") | ftxui::bold | ftxui::center, ftxui::separator(),
            }),
            ftxui::text(L"cmd_vel")| color(ftxui::Color::Red) | ftxui::center, ftxui::separator(),
-           ftxui::text(L"ver 0.1")| ftxui::bold,
+           ftxui::text(L"ver 0.2")| ftxui::bold,
            // -------- Right Menu --------------
        }),
       ftxui::separator(),
@@ -144,14 +165,27 @@ void pigeon_robot_steering::tui() // TUI 함수
   ftxui::Dimension::Full(),       // Width
   ftxui::Dimension::Fit(Document) // Height
   );
-  system("clear");
+
   Render(screen, Document);
+
+//  screen.Clear();
+//  std::cout << std::endl << std::endl;
+//  system("clear");
+
+
+  reset();
   std::cout << reset_position << screen.ToString() << std::flush;
   reset_position = screen.ResetPosition();
+//  reset();
+//  ros::Duration(0.08).sleep();
+
+
+
+//  std::this_thread::sleep_for(0.01s);
   return;
 }
 
-int pigeon_robot_steering::set_key() // 키 입려 함수
+int pigeon_robot_steering::set_key() // 키 입력 함수
 {
   key_input =  keybord_input();
   if(key_input == 119 | key_input == 87){ // INPUT W
@@ -479,7 +513,7 @@ void pigeon_robot_steering::all_reset_cmd_vel() // 모든 항목 cmd_vel 리셋 
 
 }
 
-void pigeon_robot_steering::update_topic() // cmd_vel 토픽 업데이트 함수
+void pigeon_robot_steering::update_topic() // cmd_vel 토픽 퍼블리시 함수
 {
   pub.publish(cmd_vel_pub);
   return;
@@ -496,28 +530,37 @@ void pigeon_robot_steering::spin() // 전체 흐름 제어 함수
 void pigeon_robot_steering::exit() // 종료시 값 초기화 함수
 {
   all_reset_cmd_vel();
+  tui();
   update_topic();
+  reset();
+}
+
+void pigeon_robot_steering::reset() // 터미널 리셋
+{
+  printf("\033[2J\033[1;1H");
 }
 
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "pigeon_robot_steering");
   ros::NodeHandle n;
-  ros::Rate loop_rate(10);
+  ros::Rate loop_rate(60);
 
   pigeon_robot_steering robot_steering(n);
 
   while (ros::ok())
   {
-
     robot_steering.spin();
     if(robot_steering.key_input == 27)
     {
       robot_steering.exit();
       return 0;
     }
-    ros::spinOnce();
+
     loop_rate.sleep();
+    ros::spinOnce();
+
+
 
   }
   return 0;
