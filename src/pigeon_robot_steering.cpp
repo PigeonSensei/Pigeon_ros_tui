@@ -32,12 +32,12 @@ void pigeon_robot_steering::tui() // TUI 함수
   auto negative_style_4 = (cmd_vel_menu_number == 4) ? bgcolor(ftxui::Color::Green) : bgcolor(ftxui::Color::GreenLight);
   auto negative_style_5 = (cmd_vel_menu_number == 5) ? bgcolor(ftxui::Color::Green) : bgcolor(ftxui::Color::GreenLight);
 
-  auto negative_limit_style_0 = (cmd_vel_pub.linear.x <= -1.0) ? (cmd_vel_menu_number == 0) ? bgcolor(ftxui::Color::Red) | ftxui::dim : bgcolor(ftxui::Color::RedLight) : (cmd_vel_menu_number == 0) ? bgcolor(ftxui::Color::Green) : bgcolor(ftxui::Color::GreenLight);
-  auto negative_limit_style_1 = (cmd_vel_pub.linear.y <= -1.0) ? (cmd_vel_menu_number == 1) ? bgcolor(ftxui::Color::Red) | ftxui::dim : bgcolor(ftxui::Color::RedLight) : (cmd_vel_menu_number == 1) ? bgcolor(ftxui::Color::Green) : bgcolor(ftxui::Color::GreenLight);
-  auto negative_limit_style_2 = (cmd_vel_pub.linear.z <= -1.0) ? (cmd_vel_menu_number == 2) ? bgcolor(ftxui::Color::Red) | ftxui::dim : bgcolor(ftxui::Color::RedLight) : (cmd_vel_menu_number == 2) ? bgcolor(ftxui::Color::Green) : bgcolor(ftxui::Color::GreenLight);
-  auto negative_limit_style_3 = (cmd_vel_pub.angular.x <= -1.0) ? (cmd_vel_menu_number == 3) ? bgcolor(ftxui::Color::Red) | ftxui::dim : bgcolor(ftxui::Color::RedLight) : (cmd_vel_menu_number == 3) ? bgcolor(ftxui::Color::Green) : bgcolor(ftxui::Color::GreenLight);
-  auto negative_limit_style_4 = (cmd_vel_pub.angular.y <= -1.0) ? (cmd_vel_menu_number == 4) ? bgcolor(ftxui::Color::Red) | ftxui::dim : bgcolor(ftxui::Color::RedLight) : (cmd_vel_menu_number == 4) ? bgcolor(ftxui::Color::Green) : bgcolor(ftxui::Color::GreenLight);
-  auto negative_limit_style_5 = (cmd_vel_pub.angular.z <= -1.0) ? (cmd_vel_menu_number == 5) ? bgcolor(ftxui::Color::Red) | ftxui::dim : bgcolor(ftxui::Color::RedLight) : (cmd_vel_menu_number == 5) ? bgcolor(ftxui::Color::Green) : bgcolor(ftxui::Color::GreenLight);
+  auto negative_limit_style_0 = (cmd_vel_pub.linear.x <= -1.0) ? (cmd_vel_menu_number == 0) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number == 0) ? color(ftxui::Color::Default) : color(ftxui::Color::Default);
+  auto negative_limit_style_1 = (cmd_vel_pub.linear.y <= -1.0) ? (cmd_vel_menu_number == 1) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number == 1) ? color(ftxui::Color::Default) : color(ftxui::Color::Default);
+  auto negative_limit_style_2 = (cmd_vel_pub.linear.z <= -1.0) ? (cmd_vel_menu_number == 2) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number == 2) ? color(ftxui::Color::Default) : color(ftxui::Color::Default);
+  auto negative_limit_style_3 = (cmd_vel_pub.angular.x <= -1.0) ? (cmd_vel_menu_number == 3) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number == 3) ? color(ftxui::Color::Default) : color(ftxui::Color::Default);
+  auto negative_limit_style_4 = (cmd_vel_pub.angular.y <= -1.0) ? (cmd_vel_menu_number == 4) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number == 4) ? color(ftxui::Color::Default) : color(ftxui::Color::Default);
+  auto negative_limit_style_5 = (cmd_vel_pub.angular.z <= -1.0) ? (cmd_vel_menu_number == 5) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number == 5) ? color(ftxui::Color::Default) : color(ftxui::Color::Default);
 
   ftxui::Element Document =
   ftxui::vbox({
@@ -61,12 +61,12 @@ void pigeon_robot_steering::tui() // TUI 함수
               ftxui::text(L"-"),
               }) | ftxui::bold,ftxui::separator(),
            ftxui::vbox({
-              ftxui::gauge(1- (-1 * cmd_vels.negative_linear_x)) | color(ftxui::Color::Black) | negative_limit_style_0,
-              ftxui::gauge(1- (-1 * cmd_vels.negative_linear_y)) | color(ftxui::Color::Black) | negative_limit_style_1,
-              ftxui::gauge(1- (-1 * cmd_vels.negative_linear_z)) | color(ftxui::Color::Black) | negative_limit_style_2,
-              ftxui::gauge(1- (-1 * cmd_vels.negative_angular_x)) | color(ftxui::Color::Black) | negative_limit_style_3,
-              ftxui::gauge(1- (-1 * cmd_vels.negative_angular_y)) | color(ftxui::Color::Black) | negative_limit_style_4,
-              ftxui::gauge(1- (-1 * cmd_vels.negative_angular_z)) | color(ftxui::Color::Black) | negative_limit_style_5,
+              ftxui::gauge(1- (-1 * cmd_vels.negative_linear_x)) | ftxui::inverted | negative_limit_style_0,
+              ftxui::gauge(1- (-1 * cmd_vels.negative_linear_y)) | ftxui::inverted | negative_limit_style_1,
+              ftxui::gauge(1- (-1 * cmd_vels.negative_linear_z)) | ftxui::inverted | negative_limit_style_2,
+              ftxui::gauge(1- (-1 * cmd_vels.negative_angular_x)) | ftxui::inverted | negative_limit_style_3,
+              ftxui::gauge(1- (-1 * cmd_vels.negative_angular_y)) | ftxui::inverted | negative_limit_style_4,
+              ftxui::gauge(1- (-1 * cmd_vels.negative_angular_z)) | ftxui::inverted | negative_limit_style_5,
               }) | ftxui::flex, ftxui::separator(),
            ftxui::vbox({
               ftxui::text(L"liner.x") | style_0 | ftxui::center,
