@@ -39,7 +39,7 @@ rosrun pigeon_tui pigeon_robot_steering_node
 ![pigeon_robot_steering_demo](./demo/pigeon_robot_steering_node.gif)
 #### Input Key
 - select Item : W,S
-- value Change : A, S
+- Change value : A, S
 - at Reset value : X
 - all Reset value : Z
 - exit : ESC
