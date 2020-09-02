@@ -29,8 +29,18 @@
 
 ### Usage Instructions
    Start with roscore running
+   Requires source devel/setup.bash input from catkin_ws path
+   ```bash
+   ~/catkin_ws$ source devel/setup.bash
+   ```
 #### Start the pigeon_robot_steering_node
 
+```bash
+rosrun pigeon_tui pigeon_robot_steering_node
+```
+
+##### Published Topics
+- /cmd_vel
 
 
 
