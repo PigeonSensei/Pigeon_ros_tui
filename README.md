@@ -34,7 +34,7 @@
    ~/catkin_ws$ source devel/setup.bash
    ```
 #### Start the pigeon_robot_steering_node
-
+![pigeon_robot_steering_demo](.demo/pigeon_robot_steering.gif)
 ```bash
 rosrun pigeon_tui pigeon_robot_steering_node
 ```
