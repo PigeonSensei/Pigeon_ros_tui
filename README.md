@@ -11,12 +11,6 @@
    
 ## Install
 
-   - Create a [catkin](http://wiki.ros.org/catkin#Installing_catkin) workspace
-   ```bash
-   mkdir -p ~/catkin_ws/src
-   cd ~/catkin_ws/src/
-   ```
-
    - Clone the Pigeon ROS TUI & Install
    ```bash
    mkdir -p ~/catkin_ws/src
@@ -35,7 +29,7 @@
 
    Requires source 'devel/setup.bash' input from /catkin_ws path
    ```bash
-   ~/catkin_ws$ source devel/setup.bash
+   source devel/setup.bash
    ```
 ### Start the pigeon_robot_steering_node
 
