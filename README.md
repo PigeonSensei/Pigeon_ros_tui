@@ -9,7 +9,7 @@
 
    ROS Version : melodic
    
-### Install
+## Install
 
    - Create a [catkin](http://wiki.ros.org/catkin#Installing_catkin) workspace
    ```bash
@@ -27,19 +27,21 @@
    catkin_make 
    ```
 
-### Usage Instructions
+## Usage Instructions
    Start with roscore running
+
    Requires source devel/setup.bash input from catkin_ws path
    ```bash
    ~/catkin_ws$ source devel/setup.bash
    ```
-#### Start the pigeon_robot_steering_node
-![pigeon_robot_steering_demo](./demo/pigeon_robot_steering.gif)
+### Start the pigeon_robot_steering_node
+
 ```bash
 rosrun pigeon_tui pigeon_robot_steering_node
 ```
+![pigeon_robot_steering_demo](./demo/pigeon_robot_steering.gif)
 
-##### Published Topics
+#### Published Topics
 - /cmd_vel
 
 
