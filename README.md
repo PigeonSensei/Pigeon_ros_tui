@@ -42,7 +42,7 @@
 ```bash
 rosrun pigeon_tui pigeon_robot_steering_node
 ```
-![pigeon_robot_steering_demo](./demo/pigeon_robot_steering.gif)
+![pigeon_robot_steering_demo](./demo/pigeon_robot_steering_node.gif)
 
 #### Published Topics
 - /cmd_vel
