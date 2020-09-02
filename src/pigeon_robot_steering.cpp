@@ -161,18 +161,18 @@ void pigeon_robot_steering::intput_cmd_vel_data(int cmd_vel_menu_number, int key
   if(cmd_vel_menu_number == 0)
   {
     if(key_input == 100 | key_input == 68){
-      cmd_vel_pub.linear.x = cmd_vel_pub.linear.x + 0.100000;
-      if(cmd_vel_pub.linear.x > 0.97){
+      cmd_vel_pub.linear.x = cmd_vel_pub.linear.x + 0.010000;
+      if(cmd_vel_pub.linear.x > 0.997){
         cmd_vel_pub.linear.x = 1.0;
       }
     }
      if(key_input == 97 | key_input == 65 ){
-      cmd_vel_pub.linear.x = cmd_vel_pub.linear.x - 0.100000;
-      if(cmd_vel_pub.linear.x < -0.97){
+      cmd_vel_pub.linear.x = cmd_vel_pub.linear.x - 0.010000;
+      if(cmd_vel_pub.linear.x < -0.997){
         cmd_vel_pub.linear.x = -1.0;
       }
     }
-     if(cmd_vel_pub.linear.x < 0.02 & cmd_vel_pub.linear.x > -0.02)
+     if(cmd_vel_pub.linear.x < 0.002 & cmd_vel_pub.linear.x > -0.002)
      {
        cmd_vel_pub.linear.x = 0.0;
      }
@@ -184,18 +184,18 @@ void pigeon_robot_steering::intput_cmd_vel_data(int cmd_vel_menu_number, int key
   if(cmd_vel_menu_number == 1)
   {
     if(key_input == 100 | key_input == 68){
-      cmd_vel_pub.linear.y = cmd_vel_pub.linear.y + 0.100000;
-      if(cmd_vel_pub.linear.y > 0.97){
+      cmd_vel_pub.linear.y = cmd_vel_pub.linear.y + 0.010000;
+      if(cmd_vel_pub.linear.y > 0.997){
         cmd_vel_pub.linear.y = 1.0;
       }
     }
       if(key_input == 97 | key_input == 65){
-      cmd_vel_pub.linear.y = cmd_vel_pub.linear.y - 0.100000;
-      if(cmd_vel_pub.linear.y < -0.97){
+      cmd_vel_pub.linear.y = cmd_vel_pub.linear.y - 0.010000;
+      if(cmd_vel_pub.linear.y < -0.997){
         cmd_vel_pub.linear.y = -1.0;
       }
     }
-      if(cmd_vel_pub.linear.y < 0.02 & cmd_vel_pub.linear.y > -0.02)
+      if(cmd_vel_pub.linear.y < 0.002 & cmd_vel_pub.linear.y > -0.002)
       {
         cmd_vel_pub.linear.y = 0.0;
       }
@@ -207,19 +207,19 @@ void pigeon_robot_steering::intput_cmd_vel_data(int cmd_vel_menu_number, int key
   if(cmd_vel_menu_number == 2)
   {
     if(key_input == 100 | key_input == 68){
-      cmd_vel_pub.linear.z = cmd_vel_pub.linear.z + 0.100000;
-      if(cmd_vel_pub.linear.z > 0.97){
+      cmd_vel_pub.linear.z = cmd_vel_pub.linear.z + 0.010000;
+      if(cmd_vel_pub.linear.z > 0.997){
         cmd_vel_pub.linear.z = 1.0;
       }
     }
       if(key_input == 97 | key_input == 65){
 
-        cmd_vel_pub.linear.z = cmd_vel_pub.linear.z - 0.100000;
-        if(cmd_vel_pub.linear.z < -0.97){
+        cmd_vel_pub.linear.z = cmd_vel_pub.linear.z - 0.010000;
+        if(cmd_vel_pub.linear.z < -0.997){
           cmd_vel_pub.linear.z = -1.0;
         }
     }
-      if(cmd_vel_pub.linear.z < 0.02 & cmd_vel_pub.linear.z > -0.02)
+      if(cmd_vel_pub.linear.z < 0.002 & cmd_vel_pub.linear.z > -0.002)
       {
         cmd_vel_pub.linear.z = 0.0;
       }
@@ -231,18 +231,18 @@ void pigeon_robot_steering::intput_cmd_vel_data(int cmd_vel_menu_number, int key
   if(cmd_vel_menu_number == 3)
   {
     if(key_input == 100 | key_input == 68){
-      cmd_vel_pub.angular.x = cmd_vel_pub.angular.x + 0.100000;
-      if(cmd_vel_pub.angular.x > 0.97){
+      cmd_vel_pub.angular.x = cmd_vel_pub.angular.x + 0.010000;
+      if(cmd_vel_pub.angular.x > 0.997){
         cmd_vel_pub.angular.x = 1.0;
       }
     }
       if(key_input == 97 | key_input == 65){
-      cmd_vel_pub.angular.x = cmd_vel_pub.angular.x - 0.100000;
-      if(cmd_vel_pub.angular.x < -0.97){
+      cmd_vel_pub.angular.x = cmd_vel_pub.angular.x - 0.010000;
+      if(cmd_vel_pub.angular.x < -0.997){
         cmd_vel_pub.angular.x = -1.0;
       }
     }
-      if(cmd_vel_pub.angular.x < 0.02 & cmd_vel_pub.angular.x > -0.02)
+      if(cmd_vel_pub.angular.x < 0.002 & cmd_vel_pub.angular.x > -0.002)
       {
         cmd_vel_pub.angular.x = 0.0;
       }
@@ -253,18 +253,18 @@ void pigeon_robot_steering::intput_cmd_vel_data(int cmd_vel_menu_number, int key
   if(cmd_vel_menu_number == 4)
   {
     if(key_input == 100 | key_input == 68){
-      cmd_vel_pub.angular.y = cmd_vel_pub.angular.y + 0.100000;
-      if(cmd_vel_pub.angular.y > 0.97){
+      cmd_vel_pub.angular.y = cmd_vel_pub.angular.y + 0.010000;
+      if(cmd_vel_pub.angular.y > 0.997){
         cmd_vel_pub.angular.y = 1.0;
       }
     }
       if(key_input == 97 | key_input == 65){
-      cmd_vel_pub.angular.y = cmd_vel_pub.angular.y - 0.100000;
-      if(cmd_vel_pub.angular.y < -0.97){
+      cmd_vel_pub.angular.y = cmd_vel_pub.angular.y - 0.010000;
+      if(cmd_vel_pub.angular.y < -0.997){
         cmd_vel_pub.angular.y = -1.0;
       }
     }
-      if(cmd_vel_pub.angular.y < 0.02 & cmd_vel_pub.angular.y > -0.02)
+      if(cmd_vel_pub.angular.y < 0.002 & cmd_vel_pub.angular.y > -0.002)
       {
         cmd_vel_pub.angular.y = 0.0;
       }
@@ -276,18 +276,18 @@ void pigeon_robot_steering::intput_cmd_vel_data(int cmd_vel_menu_number, int key
   if(cmd_vel_menu_number == 5)
   {
     if(key_input == 100 | key_input == 68){
-      cmd_vel_pub.angular.z = cmd_vel_pub.angular.z + 0.100000;
-      if(cmd_vel_pub.angular.z > 0.97){
+      cmd_vel_pub.angular.z = cmd_vel_pub.angular.z + 0.010000;
+      if(cmd_vel_pub.angular.z > 0.997){
         cmd_vel_pub.angular.z = 1.0;
       }
     }
       if(key_input == 97 | key_input == 65){
-      cmd_vel_pub.angular.z = cmd_vel_pub.angular.z - 0.100000;
-      if(cmd_vel_pub.angular.z < -0.97){
+      cmd_vel_pub.angular.z = cmd_vel_pub.angular.z - 0.010000;
+      if(cmd_vel_pub.angular.z < -0.997){
         cmd_vel_pub.angular.z = -1.0;
       }
     }
-      if(cmd_vel_pub.angular.z < 0.02 & cmd_vel_pub.angular.z > -0.02)
+      if(cmd_vel_pub.angular.z < 0.002 & cmd_vel_pub.angular.z > -0.002)
       {
         cmd_vel_pub.angular.z = 0.0;
       }
