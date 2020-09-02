@@ -29,6 +29,9 @@
 
 ## Usage Instructions
    Start with roscore running
+   ```bash
+   roscore
+   ```
 
    Requires source devel/setup.bash input from /catkin_ws path
    ```bash
