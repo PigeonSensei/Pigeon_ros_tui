@@ -1,7 +1,7 @@
 # Pigeon ROS TUI
 
 ### Yotube Video
-   https://www.youtube.com/watch?v=WMAcjvkGhVc
+   https://youtu.be/TM9SyRRZrPo
 
 ### Development Environment
 
