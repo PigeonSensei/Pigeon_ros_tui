@@ -62,9 +62,9 @@ void pigeon_robot_steering::tui() // TUI 함수
               ftxui::gauge(1- (-1 * cmd_vels.negative_angular_z)) | ftxui::inverted | negative_limit_style_5,
               }) | ftxui::flex, ftxui::separator(),
            ftxui::vbox({
-              ftxui::text(L"liner.x") | style_0 | ftxui::center,
-              ftxui::text(L"liner.y") | style_1 | ftxui::center,
-              ftxui::text(L"liner.z") | style_2 | ftxui::center,
+              ftxui::text(L"linear.x") | style_0 | ftxui::center,
+              ftxui::text(L"linear.y") | style_1 | ftxui::center,
+              ftxui::text(L"linear.z") | style_2 | ftxui::center,
               ftxui::text(L"angular.x") | style_3 | ftxui::center,
               ftxui::text(L"angular.y") | style_4 | ftxui::center,
               ftxui::text(L"angular.z") | style_5 | ftxui::center,
@@ -89,15 +89,15 @@ void pigeon_robot_steering::tui() // TUI 함수
       // -------- cmd_vel_info panel --------------
       ftxui::vbox({
           ftxui::hbox({
-              ftxui::text(L"liner.x   : "),
+              ftxui::text(L"linear.x  : "),
               ftxui::text(ftxui::to_wstring(std::to_string(cmd_vel_pub.linear.x) + " m/s")),
           }),
           ftxui::hbox({
-              ftxui::text(L"liner.y   : "),
+              ftxui::text(L"linear.y  : "),
               ftxui::text(ftxui::to_wstring(std::to_string(cmd_vel_pub.linear.y) + " m/s")),
           }),
           ftxui::hbox({
-              ftxui::text(L"liner.z   : "),
+              ftxui::text(L"linear.z  : "),
               ftxui::text(ftxui::to_wstring(std::to_string(cmd_vel_pub.linear.z) + " m/s")),
           }),
           ftxui::hbox({
