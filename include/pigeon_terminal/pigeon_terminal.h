@@ -2,7 +2,8 @@
 #define PIGEON_TERMINAL_H
 
 #include <termios.h>
-#include <ros/ros.h>
+#include <stdio.h>
+#include <unistd.h>
 
 #define ATTRESET "\33[0m"
 
@@ -51,26 +52,27 @@
 
 #define CLR_SCREEN  "\33[2J"
 
-class pigeon_terminal
+class Pigeon_terminal
 {
 public:
-    pigeon_terminal()
+    Pigeon_terminal()
        {
           // open run
        }
-       ~pigeon_terminal()
+       ~Pigeon_terminal()
        {
           // close run
        }
 
-    int keybord_input(); // 키보드 입력 함수
+    int ReturnInputKey(); // 키보드 입력 함수
 
-    int stay_keybord_input(); // 키보드 입력 대기 함수
+    int StayReturnInputKey(); // 키보드 입력 대기 함수
 
-    int terminal_clear(); // 터미널 창 클리어
+    int ClearTerminal(); // 터미널 창 클리어
 
 private:
 
 };
 
 #endif // PIGEON_TERMINAL_H
+

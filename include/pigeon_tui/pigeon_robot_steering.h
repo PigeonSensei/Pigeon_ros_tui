@@ -10,7 +10,7 @@
 #include "ftxui/screen/color.hpp"
 #include <pigeon_terminal/pigeon_terminal.h>
 
-struct CMD_VELS
+struct CmdVels
 {
   double linear_x = 0;
   double negative_linear_x = 0;
@@ -32,12 +32,11 @@ struct CMD_VELS
 
 };
 
-
 class pigeon_robot_steering
 {
 public:
     pigeon_robot_steering(ros::NodeHandle &n)
-           : pub(n.advertise<geometry_msgs::Twist>("cmd_vel",10))
+           : pub_(n.advertise<geometry_msgs::Twist>("cmd_vel",10))
        {
           // open run
           ROS_INFO("PIGEON_TUI_ROBOT_STEERING_NODE OPNE");
@@ -48,32 +47,32 @@ public:
           ROS_INFO("PIGEON_TUI_ROBOT_STEERING_NODE CLOSE");
        }
 
-    void tui();
+    void TUI();
 
-    int set_key();
+    int SetKey();
 
-    void intput_cmd_vel_data(int cmd_vel_menu_number, int key_input);
+    void InputCmdVelData(int cmd_vel_menu_number, int key_input);
 
-    void intput_cmd_vels(int cmd_vel_menu_number, double cmd_vel);
+    void InputCmdVels(int cmd_vel_menu_number, double cmd_vel);
 
-    void at_reset_cmd_vel(int cmd_vel_menu_number);
+    void ResetAtCmdVel(int cmd_vel_menu_number);
 
-    void all_reset_cmd_vel();
+    void ResetAllCmdVel();
 
-    void update_topic();
+    void UpdateTopic();
 
-    void spin();
+    void Spin();
 
-    void exit();
+    void Exit();
 
-    int key_input;
+    int key_value_;
 
 private:
-    ros::Publisher pub;
-    geometry_msgs::Twist cmd_vel_pub;
-    CMD_VELS cmd_vels;
-    int cmd_vel_menu_number = 0;
-    pigeon_terminal Pigeon_terminal;
+    ros::Publisher pub_;
+    geometry_msgs::Twist cmd_vel_pub_;
+    CmdVels cmd_vels_;
+    int cmd_vel_menu_number_ = 0;
+    Pigeon_terminal pigeon_terminal_;
 
 };
 #endif // PIGEON_ROBOT_STEERING_H

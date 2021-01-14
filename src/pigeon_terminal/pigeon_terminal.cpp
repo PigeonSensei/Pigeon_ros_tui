@@ -1,12 +1,12 @@
 /*
   pigeon_terminal
   maker PigeonSensei
-  Date 2020.08.30
+  Date 2021.01.11
 */
 
-#include <pigeon_terminal/pigeon_terminal.h>
+#include "pigeon_terminal/pigeon_terminal.h"
 
-int pigeon_terminal::keybord_input()
+int Pigeon_terminal::ReturnInputKey()
 {
   struct termios org_term;
 
@@ -30,24 +30,24 @@ int pigeon_terminal::keybord_input()
   return input_key;
 }
 
-int pigeon_terminal::stay_keybord_input()
+int Pigeon_terminal::StayReturnInputKey()
 {
-    int ch;
-    struct termios buf;
-    struct termios save;
+  int ch;
+  struct termios buf;
+  struct termios save;
 
-    tcgetattr(0, &save);
-    buf = save;
-    buf.c_lflag &= ~(ICANON|ECHO);
-    buf.c_cc[VMIN] = 1;
-    buf.c_cc[VTIME] = 0;
-    tcsetattr(0, TCSAFLUSH, &buf);
-    ch = getchar();
-    tcsetattr(0, TCSAFLUSH, &save);
-    return ch;
+  tcgetattr(0, &save);
+  buf = save;
+  buf.c_lflag &= ~(ICANON|ECHO);
+  buf.c_cc[VMIN] = 1;
+  buf.c_cc[VTIME] = 0;
+  tcsetattr(0, TCSAFLUSH, &buf);
+  ch = getchar();
+  tcsetattr(0, TCSAFLUSH, &save);
+  return ch;
 }
 
-int pigeon_terminal::terminal_clear()
+int Pigeon_terminal::ClearTerminal()
 {
   printf("\033[2J\033[1;1H");
   return 0;
