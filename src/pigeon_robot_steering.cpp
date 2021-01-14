@@ -6,7 +6,7 @@
 
 #include <pigeon_tui/pigeon_robot_steering.h>
 
-void pigeon_robot_steering::TUI() // TUI 함수
+void Pigeon_robot_steering::DrawTUI() // TUI 함수
 {
   std::string reset_position;
 
@@ -129,7 +129,7 @@ void pigeon_robot_steering::TUI() // TUI 함수
   return;
 }
 
-int pigeon_robot_steering::SetKey() // 키 입력 함수
+int Pigeon_robot_steering::SetKey() // 키 입력 함수
 {
   key_value_ =  pigeon_terminal_.ReturnInputKey();
   if(key_value_ == 119 | key_value_ == 87){ // INPUT W
@@ -148,7 +148,7 @@ int pigeon_robot_steering::SetKey() // 키 입력 함수
   return 0;
 }
 
-void pigeon_robot_steering::InputCmdVelData(int cmd_vel_menu_number, int key_value) // 키 입력에 따른 cmd_vel 대입 함수
+void Pigeon_robot_steering::InputCmdVelData(int cmd_vel_menu_number, int key_value) // 키 입력에 따른 cmd_vel 대입 함수
 {
 //----------------- linear_x -----------------//
   if(cmd_vel_menu_number == 0)
@@ -292,7 +292,7 @@ void pigeon_robot_steering::InputCmdVelData(int cmd_vel_menu_number, int key_val
 
 }
 
-void pigeon_robot_steering::InputCmdVels(int cmd_vel_menu_number, double cmd_vel) // TUI에 사용할 cmd_vel 대입 함수
+void Pigeon_robot_steering::InputCmdVels(int cmd_vel_menu_number, double cmd_vel) // DrawTUI에 사용할 cmd_vel 대입 함수
 {
 //----------------- linear_x -----------------//
   if(cmd_vel_menu_number == 0.0)
@@ -404,7 +404,7 @@ void pigeon_robot_steering::InputCmdVels(int cmd_vel_menu_number, double cmd_vel
   return;
 }
 
-void pigeon_robot_steering::ResetAtCmdVel(int cmd_vel_menu_number) // 현재 항목 cmd_vel 리셋 함수
+void Pigeon_robot_steering::ResetAtCmdVel(int cmd_vel_menu_number) // 현재 항목 cmd_vel 리셋 함수
 {
 //----------------- linear_x -----------------//
   if(cmd_vel_menu_number == 0){
@@ -446,7 +446,7 @@ void pigeon_robot_steering::ResetAtCmdVel(int cmd_vel_menu_number) // 현재 항
 
 }
 
-void pigeon_robot_steering::ResetAllCmdVel() // 모든 항목 cmd_vel 리셋 함수
+void Pigeon_robot_steering::ResetAllCmdVel() // 모든 항목 cmd_vel 리셋 함수
 {
 
   for(int i=0;i<6;i++){
@@ -457,24 +457,24 @@ void pigeon_robot_steering::ResetAllCmdVel() // 모든 항목 cmd_vel 리셋 함
 
 }
 
-void pigeon_robot_steering::UpdateTopic() // cmd_vel 토픽 퍼블리시 함수
+void Pigeon_robot_steering::UpdateTopic() // cmd_vel 토픽 퍼블리시 함수
 {
   pub_.publish(cmd_vel_pub_);
   return;
 }
 
-void pigeon_robot_steering::Spin() // 전체 흐름 제어 함수
+void Pigeon_robot_steering::Spin() // 전체 흐름 제어 함수
 {
-  TUI();
+  DrawTUI();
   SetKey();
   UpdateTopic();
   return;
 }
 
-void pigeon_robot_steering::Exit() // 종료시 값 초기화 함수
+void Pigeon_robot_steering::Exit() // 종료시 값 초기화 함수
 {
   ResetAllCmdVel();
-  TUI();
+  DrawTUI();
   UpdateTopic();
   pigeon_terminal_.ClearTerminal();
 }
@@ -485,14 +485,14 @@ int main(int argc, char **argv)
   ros::NodeHandle n;
   ros::Rate loop_rate(60);
 
-  pigeon_robot_steering robot_steering(n);
+  Pigeon_robot_steering pigeon_robot_steering(n);
 
   while (ros::ok())
   {
-    robot_steering.Spin();
-    if(robot_steering.key_value_ == 27)
+    pigeon_robot_steering.Spin();
+    if(pigeon_robot_steering.key_value_ == 27)
     {
-      robot_steering.Exit();
+      pigeon_robot_steering.Exit();
       return 0;
     }
 

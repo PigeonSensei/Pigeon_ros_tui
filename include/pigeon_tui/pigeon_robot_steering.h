@@ -32,22 +32,22 @@ struct CmdVels
 
 };
 
-class pigeon_robot_steering
+class Pigeon_robot_steering
 {
 public:
-    pigeon_robot_steering(ros::NodeHandle &n)
+    Pigeon_robot_steering(ros::NodeHandle &n)
            : pub_(n.advertise<geometry_msgs::Twist>("cmd_vel",10))
        {
           // open run
           ROS_INFO("PIGEON_TUI_ROBOT_STEERING_NODE OPNE");
        }
-       ~pigeon_robot_steering()
+       ~Pigeon_robot_steering()
        {
           // close run
           ROS_INFO("PIGEON_TUI_ROBOT_STEERING_NODE CLOSE");
        }
 
-    void TUI();
+    void DrawTUI();
 
     int SetKey();
 
