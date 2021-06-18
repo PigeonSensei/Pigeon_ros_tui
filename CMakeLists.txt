@@ -11,16 +11,11 @@ include(FetchContent)
 
 set(FETCHCONTENT_UPDATES_DISCONNECTED TRUE)
 FetchContent_Declare(ftxui
-  GIT_REPOSITORY https://github.com/aaleino/FTXUI
-  GIT_TAG 40929423e0b3eb5e276661be91f183641440cd5c
+    GIT_REPOSITORY https://github.com/ArthurSonzogni/ftxui
+    GIT_TAG 87a1d75bf1c1ee964e8eed4a6686544ae3b44116
 )
 
-FetchContent_GetProperties(ftxui)
-if(NOT ftxui_POPULATED)
-  FetchContent_Populate(ftxui)
-  add_subdirectory(${ftxui_SOURCE_DIR} ${ftxui_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
-
+FetchContent_MakeAvailable(ftxui)
 
 add_library(pigeon_robot_steering
     src/pigeon_robot_steering.cpp
