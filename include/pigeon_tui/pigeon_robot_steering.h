@@ -8,71 +8,65 @@
 #include "ftxui/component/container.hpp"
 #include "ftxui/screen/string.hpp"
 #include "ftxui/screen/color.hpp"
-#include <pigeon_terminal/pigeon_terminal.h>
 
-struct CmdVels
-{
-  double linear_x = 0;
-  double negative_linear_x = 0;
-
-  double linear_y = 0;
-  double negative_linear_y = 0;
-
-  double linear_z = 0;
-  double negative_linear_z = 0;
-
-  double angular_x = 0;
-  double negative_angular_x = 0;
-
-  double angular_y = 0;
-  double negative_angular_y = 0;
-
-  double angular_z = 0;
-  double negative_angular_z = 0;
-
-};
-
-class Pigeon_robot_steering
+class PigeonRobotSteering
 {
 public:
-    Pigeon_robot_steering(ros::NodeHandle &n)
-           : pub_(n.advertise<geometry_msgs::Twist>("cmd_vel",10))
+    PigeonRobotSteering(ros::NodeHandle &n, std::string cmd_vel_topic_name)
+           : publisher_cmd_vel_(n.advertise<geometry_msgs::Twist>(cmd_vel_topic_name,10)),
+             cmd_vel_topic_name_(cmd_vel_topic_name)
        {
-          // open run
-          ROS_INFO("PIGEON_TUI_ROBOT_STEERING_NODE OPNE");
+         HideEcho(true);
+         ClearTerminal();
        }
-       ~Pigeon_robot_steering()
+       ~PigeonRobotSteering()
        {
-          // close run
-          ROS_INFO("PIGEON_TUI_ROBOT_STEERING_NODE CLOSE");
+         HideEcho(false);
+         for(int i=0;i<6;i++)
+         {
+           InputCmdVelBackEndData(i,ResetCmdVelData(i));
+         }
+         DrawTUI();
+         UpdateTopic();
+         ClearTerminal();
        }
+
+    void HideEcho(bool value);
+
+    void ClearTerminal();
+
+    int ReturnInputKey();
 
     void DrawTUI();
 
-    int SetKey();
+    int GetInputKey();
 
-    void InputCmdVelData(int cmd_vel_menu_number, int key_input);
+    double InputCmdVelData(int cmd_vel_menu_number, int key_input);
 
-    void InputCmdVels(int cmd_vel_menu_number, double cmd_vel);
+    double ResetCmdVelData(int cmd_vel_menu_number);
 
-    void ResetAtCmdVel(int cmd_vel_menu_number);
-
-    void ResetAllCmdVel();
+    void InputCmdVelBackEndData(int cmd_vel_menu_number, double cmd_vel);
 
     void UpdateTopic();
 
     void Spin();
 
-    void Exit();
-
-    int key_value_;
-
 private:
-    ros::Publisher pub_;
-    geometry_msgs::Twist cmd_vel_pub_;
-    CmdVels cmd_vels_;
+
+    struct BackEndData
+    {
+      geometry_msgs::Twist positive_cmd_vel;
+      geometry_msgs::Twist negative_cmd_vel;
+    };
+
+    ros::Publisher publisher_cmd_vel_;
+    geometry_msgs::Twist cmd_vel_;
+    BackEndData back_end_data_;
     int cmd_vel_menu_number_ = 0;
-    Pigeon_terminal pigeon_terminal_;
+
+    std::string cmd_vel_topic_name_;
+    struct termios org_term_;
+    struct termios new_term_;
 
 };
 #endif // PIGEON_ROBOT_STEERING_H

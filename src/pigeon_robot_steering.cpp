@@ -1,16 +1,55 @@
 /*
-  pigeon robot steering.Ver 0.3
+  pigeon robot steering.Ver 0.4
   maker PigeonSensei
-  Date 2021.01.14
+  Date 2021.06.22
 */
 
 #include <pigeon_tui/pigeon_robot_steering.h>
 
-void Pigeon_robot_steering::DrawTUI() // TUI 함수
+void PigeonRobotSteering::HideEcho(bool value)
 {
-  std::string reset_position;
+  if(value == true)
+  {
+    tcgetattr(STDIN_FILENO, &org_term_);
 
-  // -------- style 조건문 --------------
+    new_term_ = org_term_;
+
+    new_term_.c_lflag &= ~(ECHO | ICANON);
+
+    new_term_.c_cc[VMIN] = 0;
+    new_term_.c_cc[VTIME] = 0;
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &new_term_);
+  }
+  else tcsetattr(STDIN_FILENO, TCSANOW, &org_term_);
+
+  return;
+}
+
+void PigeonRobotSteering::ClearTerminal()
+{
+  printf("\033[2J\033[1;1H");
+  return;
+}
+
+int PigeonRobotSteering::ReturnInputKey()
+{
+  char input_key = 0;
+
+  if(read(STDIN_FILENO, &input_key, 1) != 1) input_key = 0;
+
+  else
+  {
+    char dummy;
+    while (read(STDIN_FILENO, &dummy, 1) == 1) ;
+  }
+
+  return input_key;
+}
+
+void PigeonRobotSteering::DrawTUI()
+{
+  // -------- style --------------
   auto style_0 = (cmd_vel_menu_number_ == 0) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
   auto style_1 = (cmd_vel_menu_number_ == 1) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
   auto style_2 = (cmd_vel_menu_number_ == 2) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
@@ -18,465 +57,443 @@ void Pigeon_robot_steering::DrawTUI() // TUI 함수
   auto style_4 = (cmd_vel_menu_number_ == 4) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
   auto style_5 = (cmd_vel_menu_number_ == 5) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
 
-  auto limit_style_0 = (cmd_vel_pub_.linear.x >= 1.0) ? (cmd_vel_menu_number_ == 0) ? color(ftxui::Color::RedLight) | ftxui::dim : color(ftxui::Color::RedLight) : (cmd_vel_menu_number_ == 0) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
-  auto limit_style_1 = (cmd_vel_pub_.linear.y >= 1.0) ? (cmd_vel_menu_number_ == 1) ? color(ftxui::Color::RedLight) | ftxui::dim : color(ftxui::Color::RedLight) : (cmd_vel_menu_number_ == 1) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
-  auto limit_style_2 = (cmd_vel_pub_.linear.z >= 1.0) ? (cmd_vel_menu_number_ == 2) ? color(ftxui::Color::RedLight) | ftxui::dim : color(ftxui::Color::RedLight) : (cmd_vel_menu_number_ == 2) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
-  auto limit_style_3 = (cmd_vel_pub_.angular.x >= 1.0) ? (cmd_vel_menu_number_ == 3) ? color(ftxui::Color::RedLight) | ftxui::dim : color(ftxui::Color::RedLight) : (cmd_vel_menu_number_ == 3) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
-  auto limit_style_4 = (cmd_vel_pub_.angular.y >= 1.0) ? (cmd_vel_menu_number_ == 4) ? color(ftxui::Color::RedLight) | ftxui::dim : color(ftxui::Color::RedLight) : (cmd_vel_menu_number_ == 4) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
-  auto limit_style_5 = (cmd_vel_pub_.angular.z >= 1.0) ? (cmd_vel_menu_number_ == 5) ? color(ftxui::Color::RedLight) | ftxui::dim : color(ftxui::Color::RedLight) : (cmd_vel_menu_number_ == 5) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
+  auto limit_style_0 = (cmd_vel_.linear.x >= 1.0) ? (cmd_vel_menu_number_ == 0) ? color(ftxui::Color::RedLight) | ftxui::dim : color(ftxui::Color::RedLight) : (cmd_vel_menu_number_ == 0) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
+  auto limit_style_1 = (cmd_vel_.linear.y >= 1.0) ? (cmd_vel_menu_number_ == 1) ? color(ftxui::Color::RedLight) | ftxui::dim : color(ftxui::Color::RedLight) : (cmd_vel_menu_number_ == 1) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
+  auto limit_style_2 = (cmd_vel_.linear.z >= 1.0) ? (cmd_vel_menu_number_ == 2) ? color(ftxui::Color::RedLight) | ftxui::dim : color(ftxui::Color::RedLight) : (cmd_vel_menu_number_ == 2) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
+  auto limit_style_3 = (cmd_vel_.angular.x >= 1.0) ? (cmd_vel_menu_number_ == 3) ? color(ftxui::Color::RedLight) | ftxui::dim : color(ftxui::Color::RedLight) : (cmd_vel_menu_number_ == 3) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
+  auto limit_style_4 = (cmd_vel_.angular.y >= 1.0) ? (cmd_vel_menu_number_ == 4) ? color(ftxui::Color::RedLight) | ftxui::dim : color(ftxui::Color::RedLight) : (cmd_vel_menu_number_ == 4) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
+  auto limit_style_5 = (cmd_vel_.angular.z >= 1.0) ? (cmd_vel_menu_number_ == 5) ? color(ftxui::Color::RedLight) | ftxui::dim : color(ftxui::Color::RedLight) : (cmd_vel_menu_number_ == 5) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
 
-  auto negative_limit_style_0 = (cmd_vel_pub_.linear.x <= -1.0) ? (cmd_vel_menu_number_ == 0) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number_ == 0) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
-  auto negative_limit_style_1 = (cmd_vel_pub_.linear.y <= -1.0) ? (cmd_vel_menu_number_ == 1) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number_ == 1) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
-  auto negative_limit_style_2 = (cmd_vel_pub_.linear.z <= -1.0) ? (cmd_vel_menu_number_ == 2) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number_ == 2) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
-  auto negative_limit_style_3 = (cmd_vel_pub_.angular.x <= -1.0) ? (cmd_vel_menu_number_ == 3) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number_ == 3) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
-  auto negative_limit_style_4 = (cmd_vel_pub_.angular.y <= -1.0) ? (cmd_vel_menu_number_ == 4) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number_ == 4) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
-  auto negative_limit_style_5 = (cmd_vel_pub_.angular.z <= -1.0) ? (cmd_vel_menu_number_ == 5) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number_ == 5) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
+  auto negative_limit_style_0 = (cmd_vel_.linear.x <= -1.0) ? (cmd_vel_menu_number_ == 0) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number_ == 0) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
+  auto negative_limit_style_1 = (cmd_vel_.linear.y <= -1.0) ? (cmd_vel_menu_number_ == 1) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number_ == 1) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
+  auto negative_limit_style_2 = (cmd_vel_.linear.z <= -1.0) ? (cmd_vel_menu_number_ == 2) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number_ == 2) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
+  auto negative_limit_style_3 = (cmd_vel_.angular.x <= -1.0) ? (cmd_vel_menu_number_ == 3) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number_ == 3) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
+  auto negative_limit_style_4 = (cmd_vel_.angular.y <= -1.0) ? (cmd_vel_menu_number_ == 4) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number_ == 4) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
+  auto negative_limit_style_5 = (cmd_vel_.angular.z <= -1.0) ? (cmd_vel_menu_number_ == 5) ? color(ftxui::Color::Red) | ftxui::dim : color(ftxui::Color::Red) : (cmd_vel_menu_number_ == 5) ? color(ftxui::Color::Default) | ftxui::dim : color(ftxui::Color::Default);
 
   ftxui::Element Document =
-  ftxui::vbox({
-       // -------- Top panel --------------
-       ftxui::hbox({
-           ftxui::hbox({
-              ftxui::text(L"Pigeon_robot_steering") | ftxui::bold | ftxui::center, ftxui::separator(),
-           }),
-           ftxui::text(L"cmd_vel")| color(ftxui::Color::Red) | ftxui::center, ftxui::separator(),
-           ftxui::text(L"ver 0.3")| ftxui::bold,
-           // -------- cmd_vel Menu --------------
-       }),
-      ftxui::separator(),
-      ftxui::hbox({
-           ftxui::vbox({
-              ftxui::text(L"-"),
-              ftxui::text(L"-"),
-              ftxui::text(L"-"),
-              ftxui::text(L"-"),
-              ftxui::text(L"-"),
-              ftxui::text(L"-"),
-              }) | ftxui::bold,ftxui::separator(),
-           ftxui::vbox({
-              ftxui::gauge(1- (-1 * cmd_vels_.negative_linear_x)) | ftxui::inverted | negative_limit_style_0,
-              ftxui::gauge(1- (-1 * cmd_vels_.negative_linear_y)) | ftxui::inverted | negative_limit_style_1,
-              ftxui::gauge(1- (-1 * cmd_vels_.negative_linear_z)) | ftxui::inverted | negative_limit_style_2,
-              ftxui::gauge(1- (-1 * cmd_vels_.negative_angular_x)) | ftxui::inverted | negative_limit_style_3,
-              ftxui::gauge(1- (-1 * cmd_vels_.negative_angular_y)) | ftxui::inverted | negative_limit_style_4,
-              ftxui::gauge(1- (-1 * cmd_vels_.negative_angular_z)) | ftxui::inverted | negative_limit_style_5,
-              }) | ftxui::flex, ftxui::separator(),
-           ftxui::vbox({
-              ftxui::text(L"linear.x") | style_0 | ftxui::center,
-              ftxui::text(L"linear.y") | style_1 | ftxui::center,
-              ftxui::text(L"linear.z") | style_2 | ftxui::center,
-              ftxui::text(L"angular.x") | style_3 | ftxui::center,
-              ftxui::text(L"angular.y") | style_4 | ftxui::center,
-              ftxui::text(L"angular.z") | style_5 | ftxui::center,
-               }) | ftxui::bold,ftxui::separator(),
-           ftxui::vbox({
-              ftxui::gauge(cmd_vels_.linear_x) | limit_style_0,
-              ftxui::gauge(cmd_vels_.linear_y) | limit_style_1,
-              ftxui::gauge(cmd_vels_.linear_z) | limit_style_2,
-              ftxui::gauge(cmd_vels_.angular_x) | limit_style_3,
-              ftxui::gauge(cmd_vels_.angular_y) | limit_style_4,
-              ftxui::gauge(cmd_vels_.angular_z) | limit_style_5,
-              }) | ftxui::flex, ftxui::separator(),
-           ftxui::vbox({
-              ftxui::text(L"+"),
-              ftxui::text(L"+"),
-              ftxui::text(L"+"),
-              ftxui::text(L"+"),
-              ftxui::text(L"+"),
-              ftxui::text(L"+"),
-              }),
-          }) | ftxui::flex, ftxui::separator(),
-      // -------- cmd_vel_info panel --------------
-      ftxui::vbox({
-          ftxui::hbox({
-              ftxui::text(L"linear.x  : "),
-              ftxui::text(ftxui::to_wstring(std::to_string(cmd_vel_pub_.linear.x) + " m/s")),
-          }),
-          ftxui::hbox({
-              ftxui::text(L"linear.y  : "),
-              ftxui::text(ftxui::to_wstring(std::to_string(cmd_vel_pub_.linear.y) + " m/s")),
-          }),
-          ftxui::hbox({
-              ftxui::text(L"linear.z  : "),
-              ftxui::text(ftxui::to_wstring(std::to_string(cmd_vel_pub_.linear.z) + " m/s")),
-          }),
-          ftxui::hbox({
-              ftxui::text(L"angular.x : "),
-              ftxui::text(ftxui::to_wstring(std::to_string(cmd_vel_pub_.angular.x) + " rad/s")),
-          }),
-          ftxui::hbox({
-              ftxui::text(L"angular.y : "),
-              ftxui::text(ftxui::to_wstring(std::to_string(cmd_vel_pub_.angular.y) + " rad/s")),
-          }),
-          ftxui::hbox({
-              ftxui::text(L"angular.z : "),
-              ftxui::text(ftxui::to_wstring(std::to_string(cmd_vel_pub_.angular.z) + " rad/s")),
-              }),
-          }) | ftxui::flex,
+  ftxui::vbox
+  ({
+    // -------- Top panel --------------
+    ftxui::hbox
+    ({
+      ftxui::hbox
+      ({
+         ftxui::text(L"Pigeon_robot_steering") | ftxui::bold | ftxui::center, ftxui::separator(),
+      }),
+      ftxui::text(ftxui::to_wstring(cmd_vel_topic_name_))| color(ftxui::Color::Red) | ftxui::center, ftxui::separator(),
+      ftxui::text(L"ver 0.4")| ftxui::bold,
+      // -------- cmd_vel Menu --------------
+    }),
+    ftxui::separator(),
+    ftxui::hbox
+    ({
+      ftxui::vbox
+      ({
+        ftxui::text(L"-"),
+        ftxui::text(L"-"),
+        ftxui::text(L"-"),
+        ftxui::text(L"-"),
+        ftxui::text(L"-"),
+        ftxui::text(L"-"),
+      }) | ftxui::bold, ftxui::separator(),
+      ftxui::vbox
+      ({
+        ftxui::gauge(1- (-1 * back_end_data_.negative_cmd_vel.linear.x)) | ftxui::inverted | negative_limit_style_0,
+        ftxui::gauge(1- (-1 * back_end_data_.negative_cmd_vel.linear.y)) | ftxui::inverted | negative_limit_style_1,
+        ftxui::gauge(1- (-1 * back_end_data_.negative_cmd_vel.linear.z)) | ftxui::inverted | negative_limit_style_2,
+        ftxui::gauge(1- (-1 * back_end_data_.negative_cmd_vel.angular.x)) | ftxui::inverted | negative_limit_style_3,
+        ftxui::gauge(1- (-1 * back_end_data_.negative_cmd_vel.angular.y)) | ftxui::inverted | negative_limit_style_4,
+        ftxui::gauge(1- (-1 * back_end_data_.negative_cmd_vel.angular.z)) | ftxui::inverted | negative_limit_style_5,
+      }) | ftxui::flex, ftxui::separator(),
+      ftxui::vbox
+      ({
+        ftxui::text(L"linear.x") | style_0 | ftxui::center,
+        ftxui::text(L"linear.y") | style_1 | ftxui::center,
+        ftxui::text(L"linear.z") | style_2 | ftxui::center,
+        ftxui::text(L"angular.x") | style_3 | ftxui::center,
+        ftxui::text(L"angular.y") | style_4 | ftxui::center,
+        ftxui::text(L"angular.z") | style_5 | ftxui::center,
+      }) | ftxui::bold,ftxui::separator(),
+      ftxui::vbox
+      ({
+        ftxui::gauge(back_end_data_.positive_cmd_vel.linear.x) | limit_style_0,
+        ftxui::gauge(back_end_data_.positive_cmd_vel.linear.y) | limit_style_1,
+        ftxui::gauge(back_end_data_.positive_cmd_vel.linear.z) | limit_style_2,
+        ftxui::gauge(back_end_data_.positive_cmd_vel.angular.x) | limit_style_3,
+        ftxui::gauge(back_end_data_.positive_cmd_vel.angular.y) | limit_style_4,
+        ftxui::gauge(back_end_data_.positive_cmd_vel.angular.z) | limit_style_5,
+      }) | ftxui::flex, ftxui::separator(),
+      ftxui::vbox
+      ({
+        ftxui::text(L"+"),
+        ftxui::text(L"+"),
+        ftxui::text(L"+"),
+        ftxui::text(L"+"),
+        ftxui::text(L"+"),
+        ftxui::text(L"+"),
+      }),
+    }) | ftxui::flex, ftxui::separator(),
+    // -------- cmd_vel_info panel --------------
+    ftxui::vbox
+    ({
+      ftxui::hbox
+      ({
+        ftxui::text(L"linear.x  : "),
+        ftxui::text(ftxui::to_wstring(std::to_string(cmd_vel_.linear.x) + " m/s")),
+      }),
+      ftxui::hbox
+      ({
+        ftxui::text(L"linear.y  : "),
+        ftxui::text(ftxui::to_wstring(std::to_string(cmd_vel_.linear.y) + " m/s")),
+      }),
+      ftxui::hbox
+      ({
+        ftxui::text(L"linear.z  : "),
+        ftxui::text(ftxui::to_wstring(std::to_string(cmd_vel_.linear.z) + " m/s")),
+      }),
+      ftxui::hbox
+      ({
+        ftxui::text(L"angular.x : "),
+        ftxui::text(ftxui::to_wstring(std::to_string(cmd_vel_.angular.x) + " rad/s")),
+      }),
+      ftxui::hbox
+      ({
+        ftxui::text(L"angular.y : "),
+        ftxui::text(ftxui::to_wstring(std::to_string(cmd_vel_.angular.y) + " rad/s")),
+      }),
+      ftxui::hbox
+      ({
+        ftxui::text(L"angular.z : "),
+        ftxui::text(ftxui::to_wstring(std::to_string(cmd_vel_.angular.z) + " rad/s")),
+      }),
+    }) | ftxui::flex,
   });
+
   Document = border(Document);
-  auto screen = ftxui::Screen::Create(
-  ftxui::Dimension::Full(),       // Width
-  ftxui::Dimension::Fit(Document) // Height
-  );
+  auto screen = ftxui::Screen::Create(ftxui::Dimension::Full(), ftxui::Dimension::Fit(Document));
 
   Render(screen, Document);
-
-  pigeon_terminal_.ClearTerminal();
-  std::cout << reset_position << screen.ToString() << std::flush;
-  reset_position = screen.ResetPosition();
-
+  ClearTerminal();
+  screen.Print();
   return;
 }
 
-int Pigeon_robot_steering::SetKey() // 키 입력 함수
+int PigeonRobotSteering::GetInputKey()
 {
-  key_value_ =  pigeon_terminal_.ReturnInputKey();
-  if(key_value_ == 119 | key_value_ == 87){ // INPUT W
-    cmd_vel_menu_number_ = cmd_vel_menu_number_ - 1;
-    if(cmd_vel_menu_number_ < 0 ) cmd_vel_menu_number_ = 0;
-  }
-  if(key_value_ == 115 | key_value_ == 83){ // INPUT S
-    cmd_vel_menu_number_ = cmd_vel_menu_number_ + 1;
-    if(cmd_vel_menu_number_ > 5 ) cmd_vel_menu_number_ = 5;
-  }
-  if(key_value_ == 100 | key_value_ == 68) InputCmdVelData(cmd_vel_menu_number_, key_value_); //INPUT D
-  if(key_value_ == 97 | key_value_ == 65) InputCmdVelData(cmd_vel_menu_number_, key_value_); //INPUT A
+  int minimum_menu_number = 0;
+  int maximum_menu_number = 5;
 
-  if(key_value_ == 122 | key_value_ == 90) ResetAllCmdVel(); // INPUT Z
-  if(key_value_ == 120 | key_value_ == 88) ResetAtCmdVel(cmd_vel_menu_number_); //INPUT X
+  int key_value;
+
+  key_value =  ReturnInputKey();
+
+  // INPUT W
+  if(key_value == 119 | key_value == 87)
+  {
+    cmd_vel_menu_number_ = cmd_vel_menu_number_ - 1;
+    if(cmd_vel_menu_number_ < 0 ) cmd_vel_menu_number_ = minimum_menu_number;
+  }
+
+  // INPUT S
+  if(key_value == 115 | key_value == 83)
+  {
+    cmd_vel_menu_number_ = cmd_vel_menu_number_ + 1;
+    if(cmd_vel_menu_number_ > 5 ) cmd_vel_menu_number_ = maximum_menu_number;
+  }
+
+  //INPUT D
+  if(key_value == 100 | key_value == 68) InputCmdVelBackEndData(cmd_vel_menu_number_, InputCmdVelData(cmd_vel_menu_number_, key_value));
+
+  //INPUT A
+  if(key_value == 97 | key_value == 65) InputCmdVelBackEndData(cmd_vel_menu_number_, InputCmdVelData(cmd_vel_menu_number_, key_value));
+
+  //INPUT X
+  if(key_value == 120 | key_value == 88) InputCmdVelBackEndData(cmd_vel_menu_number_, ResetCmdVelData(cmd_vel_menu_number_));
+
+  // INPUT Z
+  if(key_value == 122 | key_value == 90)
+  {
+    for(int i=0;i<6;i++)
+    {
+      InputCmdVelBackEndData(i,ResetCmdVelData(i));
+    }
+  }
+
   return 0;
 }
 
-void Pigeon_robot_steering::InputCmdVelData(int cmd_vel_menu_number, int key_value) // 키 입력에 따른 cmd_vel 대입 함수
+double PigeonRobotSteering::InputCmdVelData(int cmd_vel_menu_number, int key_value)
 {
+
 //----------------- linear_x -----------------//
   if(cmd_vel_menu_number == 0)
   {
-    if(key_value == 100 | key_value == 68){
-      cmd_vel_pub_.linear.x = cmd_vel_pub_.linear.x + 0.010000;
-      if(cmd_vel_pub_.linear.x > 0.997){
-        cmd_vel_pub_.linear.x = 1.0;
-      }
+    if(key_value == 100 | key_value == 68)
+    {
+      cmd_vel_.linear.x = cmd_vel_.linear.x + 0.01;
+      if(cmd_vel_.linear.x > 1.0) cmd_vel_.linear.x = 1.0;
     }
-     if(key_value == 97 | key_value == 65 ){
-      cmd_vel_pub_.linear.x = cmd_vel_pub_.linear.x - 0.010000;
-      if(cmd_vel_pub_.linear.x < -0.997){
-        cmd_vel_pub_.linear.x = -1.0;
-      }
-    }
-     if(cmd_vel_pub_.linear.x < 0.002 & cmd_vel_pub_.linear.x > -0.002)
-     {
-       cmd_vel_pub_.linear.x = 0.0;
-     }
-
-    InputCmdVels(cmd_vel_menu_number,cmd_vel_pub_.linear.x);
+    if(key_value == 97 | key_value == 65 )
+    {
+      cmd_vel_.linear.x = cmd_vel_.linear.x - 0.01;
+      if(cmd_vel_.linear.x < -1.0) cmd_vel_.linear.x = -1.0;
     }
 
-//----------------- linear_y -----------------//
-  if(cmd_vel_menu_number == 1)
-  {
-    if(key_value == 100 | key_value == 68){
-      cmd_vel_pub_.linear.y = cmd_vel_pub_.linear.y + 0.010000;
-      if(cmd_vel_pub_.linear.y > 0.997){
-        cmd_vel_pub_.linear.y = 1.0;
-      }
-    }
-      if(key_value == 97 | key_value == 65){
-      cmd_vel_pub_.linear.y = cmd_vel_pub_.linear.y - 0.010000;
-      if(cmd_vel_pub_.linear.y < -0.997){
-        cmd_vel_pub_.linear.y = -1.0;
-      }
-    }
-      if(cmd_vel_pub_.linear.y < 0.002 & cmd_vel_pub_.linear.y > -0.002)
-      {
-        cmd_vel_pub_.linear.y = 0.0;
-      }
-
-  InputCmdVels(cmd_vel_menu_number,cmd_vel_pub_.linear.y);
-  }
-
-//----------------- linear_z -----------------//
-  if(cmd_vel_menu_number == 2)
-  {
-    if(key_value == 100 | key_value == 68){
-      cmd_vel_pub_.linear.z = cmd_vel_pub_.linear.z + 0.010000;
-      if(cmd_vel_pub_.linear.z > 0.997){
-        cmd_vel_pub_.linear.z = 1.0;
-      }
-    }
-      if(key_value == 97 | key_value == 65){
-
-        cmd_vel_pub_.linear.z = cmd_vel_pub_.linear.z - 0.010000;
-        if(cmd_vel_pub_.linear.z < -0.997){
-          cmd_vel_pub_.linear.z = -1.0;
-        }
-    }
-      if(cmd_vel_pub_.linear.z < 0.002 & cmd_vel_pub_.linear.z > -0.002)
-      {
-        cmd_vel_pub_.linear.z = 0.0;
-      }
-
-  InputCmdVels(cmd_vel_menu_number,cmd_vel_pub_.linear.z);
-  }
-
-//----------------- angular_x -----------------//
-  if(cmd_vel_menu_number == 3)
-  {
-    if(key_value == 100 | key_value == 68){
-      cmd_vel_pub_.angular.x = cmd_vel_pub_.angular.x + 0.010000;
-      if(cmd_vel_pub_.angular.x > 0.997){
-        cmd_vel_pub_.angular.x = 1.0;
-      }
-    }
-      if(key_value == 97 | key_value == 65){
-      cmd_vel_pub_.angular.x = cmd_vel_pub_.angular.x - 0.010000;
-      if(cmd_vel_pub_.angular.x < -0.997){
-        cmd_vel_pub_.angular.x = -1.0;
-      }
-    }
-      if(cmd_vel_pub_.angular.x < 0.002 & cmd_vel_pub_.angular.x > -0.002)
-      {
-        cmd_vel_pub_.angular.x = 0.0;
-      }
-  InputCmdVels(cmd_vel_menu_number,cmd_vel_pub_.angular.x);
-  }
-
-//----------------- angular_y -----------------//
-  if(cmd_vel_menu_number == 4)
-  {
-    if(key_value == 100 | key_value == 68){
-      cmd_vel_pub_.angular.y = cmd_vel_pub_.angular.y + 0.010000;
-      if(cmd_vel_pub_.angular.y > 0.997){
-        cmd_vel_pub_.angular.y = 1.0;
-      }
-    }
-      if(key_value == 97 | key_value == 65){
-      cmd_vel_pub_.angular.y = cmd_vel_pub_.angular.y - 0.010000;
-      if(cmd_vel_pub_.angular.y < -0.997){
-        cmd_vel_pub_.angular.y = -1.0;
-      }
-    }
-      if(cmd_vel_pub_.angular.y < 0.002 & cmd_vel_pub_.angular.y > -0.002)
-      {
-        cmd_vel_pub_.angular.y = 0.0;
-      }
-
-  InputCmdVels(cmd_vel_menu_number,cmd_vel_pub_.angular.y);
-  }
-
-//----------------- angular_z -----------------//
-  if(cmd_vel_menu_number == 5)
-  {
-    if(key_value == 100 | key_value == 68){
-      cmd_vel_pub_.angular.z = cmd_vel_pub_.angular.z + 0.010000;
-      if(cmd_vel_pub_.angular.z > 0.997){
-        cmd_vel_pub_.angular.z = 1.0;
-      }
-    }
-      if(key_value == 97 | key_value == 65){
-      cmd_vel_pub_.angular.z = cmd_vel_pub_.angular.z - 0.010000;
-      if(cmd_vel_pub_.angular.z < -0.997){
-        cmd_vel_pub_.angular.z = -1.0;
-      }
-    }
-      if(cmd_vel_pub_.angular.z < 0.002 & cmd_vel_pub_.angular.z > -0.002)
-      {
-        cmd_vel_pub_.angular.z = 0.0;
-      }
-
-  InputCmdVels(cmd_vel_menu_number,cmd_vel_pub_.angular.z);
-  }
-
-  return;
-
-}
-
-void Pigeon_robot_steering::InputCmdVels(int cmd_vel_menu_number, double cmd_vel) // DrawTUI에 사용할 cmd_vel 대입 함수
-{
-//----------------- linear_x -----------------//
-  if(cmd_vel_menu_number == 0.0)
-  {
-    if(cmd_vel > 0.0){
-    cmd_vels_.linear_x = cmd_vel;
-    cmd_vels_.negative_linear_x = 0.0;
-    }
-    if(cmd_vel < 0.0){
-    cmd_vels_.linear_x = 0.0;
-    cmd_vels_.negative_linear_x = cmd_vel;
-    }
-    if(cmd_vel == 0.0){
-    cmd_vels_.linear_x = 0.0;
-    cmd_vels_.negative_linear_x = 0.0;
-    }
-    cmd_vel_pub_.linear.x = cmd_vel;
+    cmd_vel_.linear.x = round(cmd_vel_.linear.x * 100) / 100;
+    return cmd_vel_.linear.x;
   }
 
 //----------------- linear_y -----------------//
   if(cmd_vel_menu_number == 1)
   {
-    if(cmd_vel > 0.0){
-    cmd_vels_.linear_y = cmd_vel;
-    cmd_vels_.negative_linear_y = 0.0;
+    if(key_value == 100 | key_value == 68)
+    {
+      cmd_vel_.linear.y = cmd_vel_.linear.y + 0.01;
+      if(cmd_vel_.linear.y > 1.0) cmd_vel_.linear.y = 1.0;
     }
-    if(cmd_vel < 0.0){
-    cmd_vels_.linear_y = 0.0;
-    cmd_vels_.negative_linear_y = cmd_vel;
+    if(key_value == 97 | key_value == 65)
+    {
+      cmd_vel_.linear.y = cmd_vel_.linear.y - 0.01;
+      if(cmd_vel_.linear.y < -1.0) cmd_vel_.linear.y = -1.0;
     }
-    if(cmd_vel == 0.0){
-    cmd_vels_.linear_y = 0.0;
-    cmd_vels_.negative_linear_y = 0.0;
-    }
-    cmd_vel_pub_.linear.y = cmd_vel;
+
+    cmd_vel_.linear.y = round(cmd_vel_.linear.y * 100) / 100;
+    return cmd_vel_.linear.y;
   }
 
 //----------------- linear_z -----------------//
   if(cmd_vel_menu_number == 2)
   {
-    if(cmd_vel > 0.0){
-    cmd_vels_.linear_z = cmd_vel;
-    cmd_vels_.negative_linear_z = 0.0;
+    if(key_value == 100 | key_value == 68)
+    {
+      cmd_vel_.linear.z = cmd_vel_.linear.z + 0.01;
+      if(cmd_vel_.linear.z > 1.0) cmd_vel_.linear.z = 1.0;
     }
-    if(cmd_vel < 0.0){
-    cmd_vels_.linear_z = 0.0;
-    cmd_vels_.negative_linear_z = cmd_vel;
+    if(key_value == 97 | key_value == 65)
+    {
+      cmd_vel_.linear.z = cmd_vel_.linear.z - 0.01;
+      if(cmd_vel_.linear.z < -1.0) cmd_vel_.linear.z = -1.0;
     }
-    if(cmd_vel == 0.0){
-    cmd_vels_.linear_z = 0.0;
-    cmd_vels_.negative_linear_z = 0.0;
-    }
-    cmd_vel_pub_.linear.z = cmd_vel;
+
+    cmd_vel_.linear.z = round(cmd_vel_.linear.z * 100) / 100;
+    return cmd_vel_.linear.z;
   }
 
 //----------------- angular_x -----------------//
   if(cmd_vel_menu_number == 3)
   {
-    if(cmd_vel > 0.0){
-    cmd_vels_.angular_x = cmd_vel;
-    cmd_vels_.negative_angular_x = 0.0;
+    if(key_value == 100 | key_value == 68)
+    {
+      cmd_vel_.angular.x = cmd_vel_.angular.x + 0.01;
+      if(cmd_vel_.angular.x > 1.0) cmd_vel_.angular.x = 1.0;
     }
-    if(cmd_vel < 0.0){
-    cmd_vels_.angular_x = 0.0;
-    cmd_vels_.negative_angular_x = cmd_vel;
+    if(key_value == 97 | key_value == 65)
+    {
+      cmd_vel_.angular.x = cmd_vel_.angular.x - 0.010000;
+      if(cmd_vel_.angular.x < -1.0) cmd_vel_.angular.x = -1.0;
     }
-    if(cmd_vel == 0.0){
-    cmd_vels_.angular_x = 0.0;
-    cmd_vels_.negative_angular_x = 0.0;
-    }
-    cmd_vel_pub_.angular.x = cmd_vel;
+
+    cmd_vel_.angular.x = round(cmd_vel_.angular.x * 100) / 100;
+    return cmd_vel_.angular.x;
   }
 
 //----------------- angular_y -----------------//
   if(cmd_vel_menu_number == 4)
   {
-    if(cmd_vel > 0.0){
-    cmd_vels_.angular_y = cmd_vel;
-    cmd_vels_.negative_angular_y = 0.0;
+    if(key_value == 100 | key_value == 68)
+    {
+      cmd_vel_.angular.y = cmd_vel_.angular.y + 0.01;
+      if(cmd_vel_.angular.y > 1.0) cmd_vel_.angular.y = 1.0;
     }
-    if(cmd_vel < 0.0){
-    cmd_vels_.angular_y = 0.0;
-    cmd_vels_.negative_angular_y = cmd_vel;
+    if(key_value == 97 | key_value == 65)
+    {
+      cmd_vel_.angular.y = cmd_vel_.angular.y - 0.01;
+      if(cmd_vel_.angular.y < -1.0) cmd_vel_.angular.y = -1.0;
     }
-    if(cmd_vel == 0.0){
-    cmd_vels_.angular_y = 0.0;
-    cmd_vels_.negative_angular_y = 0.0;
-    }
-    cmd_vel_pub_.angular.y = cmd_vel;
+
+    cmd_vel_.angular.y = round(cmd_vel_.angular.y * 100) / 100;
+    return cmd_vel_.angular.y;
   }
 
 //----------------- angular_z -----------------//
   if(cmd_vel_menu_number == 5)
   {
-    if(cmd_vel > 0.0){
-    cmd_vels_.angular_z = cmd_vel;
-    cmd_vels_.negative_angular_z = 0.0;
+    if(key_value == 100 | key_value == 68)
+    {
+      cmd_vel_.angular.z = cmd_vel_.angular.z + 0.01;
+      if(cmd_vel_.angular.z > 1.0) cmd_vel_.angular.z = 1.0;
     }
-    if(cmd_vel < 0.0){
-    cmd_vels_.angular_z = 0.0;
-    cmd_vels_.negative_angular_z = cmd_vel;
+    if(key_value == 97 | key_value == 65)
+    {
+      cmd_vel_.angular.z = cmd_vel_.angular.z - 0.01;
+      if(cmd_vel_.angular.z < -1.0) cmd_vel_.angular.z = -1.0;
     }
-    if(cmd_vel == 0.0){
-    cmd_vels_.angular_z = 0.0;
-    cmd_vels_.negative_angular_z = 0.0;
-    }
-    cmd_vel_pub_.angular.z = cmd_vel;
+
+    cmd_vel_.angular.z = round(cmd_vel_.angular.z * 100) / 100;
+    return cmd_vel_.angular.z;
+
   }
-  return;
+
+  return 0.0;
 }
 
-void Pigeon_robot_steering::ResetAtCmdVel(int cmd_vel_menu_number) // 현재 항목 cmd_vel 리셋 함수
+void PigeonRobotSteering::InputCmdVelBackEndData(int cmd_vel_menu_number, double cmd_vel)
 {
+
 //----------------- linear_x -----------------//
-  if(cmd_vel_menu_number == 0){
-    cmd_vel_pub_.linear.x = 0;
-    InputCmdVels(cmd_vel_menu_number,cmd_vel_pub_.linear.x);
+  if(cmd_vel_menu_number == 0)
+  {
+    if(cmd_vel > 0.0)
+    {
+      back_end_data_.positive_cmd_vel.linear.x = cmd_vel;
+      back_end_data_.negative_cmd_vel.linear.x = 0.0;
+    }
+    if(cmd_vel < 0.0)
+    {
+      back_end_data_.positive_cmd_vel.linear.x = 0.0;
+      back_end_data_.negative_cmd_vel.linear.x = cmd_vel;
+    }
+    if(cmd_vel == 0.0)
+    {
+      back_end_data_.positive_cmd_vel.linear.x = 0.0;
+      back_end_data_.negative_cmd_vel.linear.x = 0.0;
+    }
   }
 
 //----------------- linear_y -----------------//
-  if(cmd_vel_menu_number == 1){
-    cmd_vel_pub_.linear.y = 0;
-    InputCmdVels(cmd_vel_menu_number,cmd_vel_pub_.linear.y);
+  if(cmd_vel_menu_number == 1)
+  {
+    if(cmd_vel > 0.0)
+    {
+      back_end_data_.positive_cmd_vel.linear.y = cmd_vel;
+      back_end_data_.negative_cmd_vel.linear.y = 0.0;
+    }
+    if(cmd_vel < 0.0)
+    {
+      back_end_data_.positive_cmd_vel.linear.y = 0.0;
+      back_end_data_.negative_cmd_vel.linear.y = cmd_vel;
+    }
+    if(cmd_vel == 0.0)
+    {
+      back_end_data_.positive_cmd_vel.linear.y = 0.0;
+      back_end_data_.negative_cmd_vel.linear.y = 0.0;
+    }
   }
 
 //----------------- linear_z -----------------//
-  if(cmd_vel_menu_number == 2){
-    cmd_vel_pub_.linear.z = 0;
-    InputCmdVels(cmd_vel_menu_number,cmd_vel_pub_.linear.z);
+  if(cmd_vel_menu_number == 2)
+  {
+    if(cmd_vel > 0.0)
+    {
+      back_end_data_.positive_cmd_vel.linear.z = cmd_vel;
+      back_end_data_.negative_cmd_vel.linear.z = 0.0;
+    }
+    if(cmd_vel < 0.0)
+    {
+      back_end_data_.positive_cmd_vel.linear.z = 0.0;
+      back_end_data_.negative_cmd_vel.linear.z = cmd_vel;
+    }
+    if(cmd_vel == 0.0)
+    {
+      back_end_data_.positive_cmd_vel.linear.z = 0.0;
+      back_end_data_.negative_cmd_vel.linear.z = 0.0;
+    }
   }
 
 //----------------- angular_x -----------------//
-  if(cmd_vel_menu_number == 3){
-    cmd_vel_pub_.angular.x = 0;
-    InputCmdVels(cmd_vel_menu_number,cmd_vel_pub_.angular.x);
+  if(cmd_vel_menu_number == 3)
+  {
+    if(cmd_vel > 0.0)
+    {
+      back_end_data_.positive_cmd_vel.angular.x = cmd_vel;
+      back_end_data_.negative_cmd_vel.angular.x = 0.0;
+    }
+    if(cmd_vel < 0.0)
+    {
+      back_end_data_.positive_cmd_vel.angular.x = 0.0;
+      back_end_data_.negative_cmd_vel.angular.x = cmd_vel;
+    }
+    if(cmd_vel == 0.0)
+    {
+      back_end_data_.positive_cmd_vel.angular.x = 0.0;
+      back_end_data_.negative_cmd_vel.angular.x = 0.0;
+    }
   }
 
 //----------------- angular_y -----------------//
-  if(cmd_vel_menu_number == 4){
-    cmd_vel_pub_.angular.y = 0;
-    InputCmdVels(cmd_vel_menu_number,cmd_vel_pub_.angular.y);
+  if(cmd_vel_menu_number == 4)
+  {
+    if(cmd_vel > 0.0)
+    {
+      back_end_data_.positive_cmd_vel.angular.y = cmd_vel;
+      back_end_data_.negative_cmd_vel.angular.y = 0.0;
+    }
+    if(cmd_vel < 0.0)
+    {
+      back_end_data_.positive_cmd_vel.angular.y = 0.0;
+      back_end_data_.negative_cmd_vel.angular.y = cmd_vel;
+    }
+    if(cmd_vel == 0.0)
+    {
+      back_end_data_.positive_cmd_vel.angular.y = 0.0;
+      back_end_data_.negative_cmd_vel.angular.y = 0.0;
+    }
   }
 
 //----------------- angular_z -----------------//
-  if(cmd_vel_menu_number == 5){
-    cmd_vel_pub_.angular.z = 0;
-    InputCmdVels(cmd_vel_menu_number,cmd_vel_pub_.angular.z);
+  if(cmd_vel_menu_number == 5)
+  {
+    if(cmd_vel > 0.0)
+    {
+      back_end_data_.positive_cmd_vel.angular.z = cmd_vel;
+      back_end_data_.negative_cmd_vel.angular.z = 0.0;
+    }
+    if(cmd_vel < 0.0)
+    {
+      back_end_data_.positive_cmd_vel.angular.z = 0.0;
+      back_end_data_.negative_cmd_vel.angular.z = cmd_vel;
+    }
+    if(cmd_vel == 0.0)
+    {
+      back_end_data_.positive_cmd_vel.angular.z = 0.0;
+      back_end_data_.negative_cmd_vel.angular.z = 0.0;
+    }
   }
-
   return;
-
 }
 
-void Pigeon_robot_steering::ResetAllCmdVel() // 모든 항목 cmd_vel 리셋 함수
+double PigeonRobotSteering::ResetCmdVelData(int cmd_vel_menu_number)
 {
 
-  for(int i=0;i<6;i++){
-    ResetAtCmdVel(i);
-  }
+  if(cmd_vel_menu_number == 0) cmd_vel_.linear.x = 0;
 
-  return;
+  if(cmd_vel_menu_number == 1) cmd_vel_.linear.y = 0;
+
+  if(cmd_vel_menu_number == 2) cmd_vel_.linear.z = 0;
+
+  if(cmd_vel_menu_number == 3) cmd_vel_.angular.x = 0;
+
+  if(cmd_vel_menu_number == 4) cmd_vel_.angular.y = 0;
+
+  if(cmd_vel_menu_number == 5) cmd_vel_.angular.z = 0;
+
+  return 0.0;
 
 }
 
-void Pigeon_robot_steering::UpdateTopic() // cmd_vel 토픽 퍼블리시 함수
+void PigeonRobotSteering::UpdateTopic()
 {
-  pub_.publish(cmd_vel_pub_);
+  publisher_cmd_vel_.publish(cmd_vel_);
   return;
 }
 
-void Pigeon_robot_steering::Spin() // 전체 흐름 제어 함수
+void PigeonRobotSteering::Spin()
 {
   DrawTUI();
-  SetKey();
+  GetInputKey();
   UpdateTopic();
   return;
-}
-
-void Pigeon_robot_steering::Exit() // 종료시 값 초기화 함수
-{
-  ResetAllCmdVel();
-  DrawTUI();
-  UpdateTopic();
-  pigeon_terminal_.ClearTerminal();
 }
 
 int main(int argc, char **argv)
@@ -485,21 +502,20 @@ int main(int argc, char **argv)
   ros::NodeHandle n;
   ros::Rate loop_rate(60);
 
-  Pigeon_robot_steering pigeon_robot_steering(n);
+  std::string cmd_vel_topic_name;
+
+  if(argc == 1) cmd_vel_topic_name = "cmd_vel";
+  else cmd_vel_topic_name = argv[1];
+
+  PigeonRobotSteering pigeon_robot_steering(n,cmd_vel_topic_name);
 
   while (ros::ok())
   {
     pigeon_robot_steering.Spin();
-    if(pigeon_robot_steering.key_value_ == 27)
-    {
-      pigeon_robot_steering.Exit();
-      return 0;
-    }
-
     loop_rate.sleep();
     ros::spinOnce();
-
   }
+
   return 0;
 
 }

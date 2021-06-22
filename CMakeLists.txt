@@ -22,11 +22,6 @@ add_library(pigeon_robot_steering
     include/pigeon_tui/pigeon_robot_steering.h
     )
 
-add_library(pigeon_terminal
-    include/pigeon_terminal/pigeon_terminal.h
-    src/pigeon_terminal/pigeon_terminal.cpp
-    )
-
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES pigeon_tui
@@ -41,7 +36,6 @@ include_directories(
 
 add_executable(pigeon_robot_steering_node src/pigeon_robot_steering.cpp)
 target_link_libraries(pigeon_robot_steering_node
-  PRIVATE pigeon_terminal
   PRIVATE ftxui::screen
   PRIVATE ftxui::dom
   PRIVATE ftxui::component ${catkin_LIBRARIES})
