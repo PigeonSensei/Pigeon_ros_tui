@@ -2,12 +2,6 @@
 
 ### Yotube Video
    https://youtu.be/TM9SyRRZrPo
-
-### Development Environment
-
-   OS : Ubuntu 18.04
-
-   ROS Version : melodic
    
 ## Dependency package
 
@@ -25,30 +19,27 @@
    catkin_make 
    ```
 
-## Usage Instructions
-   Start with 'roscore' running
-   ```bash
-   roscore
-   ```
-
-   Requires source 'devel/setup.bash' input from /catkin_ws path
-   ```bash
-   source devel/setup.bash
-   ```
-### Start the pigeon_robot_steering_node
+### pigeon_robot_steering
 
 ```bash
-rosrun pigeon_tui pigeon_robot_steering_node
+rosrun pigeon_tui pigeon_robot_steering_node <topic_name>
 ```
+#### args
+- topic name 
+
+  Publish the name used as an argument as a topic.
+  If there is no argument, the topic is published with the cmd_vel name.
+
 ![pigeon_robot_steering_demo](./demo/pigeon_robot_steering_node.gif)
 #### Input Key
 - select Item : W,S
 - Change value : A, S
 - at Reset value : X
 - all Reset value : Z
-- exit : ESC
+
+
 #### Published Topics
-- /cmd_vel
+- /cmd_vel([geometry_msgs/Twist](http://docs.ros.org/en/api/geometry_msgs/html/msg/Twist.html))
 
 
 The next node is under development ...
