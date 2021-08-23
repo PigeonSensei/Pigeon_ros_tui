@@ -39,7 +39,7 @@ rosrun pigeon_tui pigeon_robot_steering_node <topic_name>
 
 
 #### Published Topics
-- /cmd_vel([geometry_msgs/Twist](http://docs.ros.org/en/api/geometry_msgs/html/msg/Twist.html))
+- cmd_vel([geometry_msgs/Twist](http://docs.ros.org/en/api/geometry_msgs/html/msg/Twist.html))
 
 
 The next node is under development ...
