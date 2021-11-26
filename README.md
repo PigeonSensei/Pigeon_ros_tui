@@ -25,21 +25,21 @@
 rosrun pigeon_tui pigeon_robot_steering_node <topic_name>
 ```
 #### args
-- topic name 
+- **topic name** 
 
   Publish the name used as an argument as a topic.
   If there is no argument, the topic is published with the cmd_vel name.
 
 ![pigeon_robot_steering_demo](./demo/pigeon_robot_steering_node.gif)
 #### Input Key
-- select Item : W,S
-- Change value : A, S
-- at Reset value : X
-- all Reset value : Z
+- **select Item** : W,S
+- **Change value** : A, S
+- **at Reset value** : X
+- **all Reset value** : Z
 
 
 #### Published Topics
-- cmd_vel ([geometry_msgs/Twist](http://docs.ros.org/en/api/geometry_msgs/html/msg/Twist.html))
+- **cmd_vel** ([geometry_msgs/Twist](http://docs.ros.org/en/api/geometry_msgs/html/msg/Twist.html))
 
 
 The next node is under development ...
