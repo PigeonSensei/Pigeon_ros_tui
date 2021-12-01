@@ -17,11 +17,6 @@ FetchContent_Declare(ftxui
 
 FetchContent_MakeAvailable(ftxui)
 
-add_library(pigeon_robot_steering
-    src/pigeon_robot_steering.cpp
-    include/pigeon_tui/pigeon_robot_steering.h
-    )
-
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES pigeon_tui
